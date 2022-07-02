@@ -12,6 +12,7 @@ def scrape_all():
     browser = Browser('chrome', **executable_path, headless=True)
 
     news_title, news_paragraph = mars_news(browser)
+    hemisphere_image_urls=hemisphere(browser)
 
     # Run all scraping functions and store results in a dictionary
     data = {
@@ -96,6 +97,25 @@ def mars_facts():
 
     # Convert dataframe into HTML format, add bootstrap
     return df.to_html(classes="table table-striped")
+
+def hemisphere(browser):
+    url='https://marshemispheres.com/'
+    browser.visit(url)
+    
+    hemisphere_image_urls = []
+    
+    links = browser.find_by_css('a.product-item img')
+    
+    
+    for i in range(len(links)):
+        hemisphere = {}
+        browser.find_by_css('a.product-item img')[i].click()
+        sample_elem = browser.links.find_by_text('Sample').first
+        hemisphere['img_url'] = sample_elem['href']
+        hemisphere['title'] = browser.find_by_css('h2.title').text
+        hemisphere_image_urls.append(hemisphere)
+        browser.back()
+    return hemisphere_image_urls
 
 if __name__ == "__main__":
 
